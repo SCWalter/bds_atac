@@ -15,7 +15,8 @@ fi
 
 SCR_NAME="$1".BDS
 
-if [ $(screen -ls $SCR_NAME | grep 'No Sockets' | wc -l) != "1" ]; then
+#if [ $(screen -ls $SCR_NAME | grep 'No Sockets' | wc -l) != "1" ]; then
+if [ $(screen -ls | grep -P "[\t ]\d+.$SCR_NAME" | wc -l) != "0" ]; then
   echo "error: A screen named $SCR_NAME already exists."
   exit 1
 else
@@ -34,6 +35,11 @@ else
 fi
 
 PARAM=
+
+if [ $(find $LOG_FILE_NAME -mmin -2 2> /dev/null | wc -l) != "0" ]; then
+  echo "error: log file handle is open or very fresh (modified in past 2 minutes)."
+  exit 3
+fi
 
 for ((i=$PARAM_START_IDX;i<=$#;i++)); do
   PARAM="$PARAM ${!i}"
